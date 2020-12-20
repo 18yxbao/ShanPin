@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <paths>
+        <external-path name="external_files" path="."/>
+        <external-path path="Android/data/com.example.shanpin/" name="files_root" />
+        <external-path
+            name="dcim_path"
+            path="DCIM"/>
+        <external-path
+            name="picture_path"
+            path="Pictures"/>
+        <external-path name="external_files" path="."/>
+    </paths>
+</resources>
