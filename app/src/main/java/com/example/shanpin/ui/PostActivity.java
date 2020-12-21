@@ -1,8 +1,10 @@
 package com.example.shanpin.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,7 +16,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.shanpin.Adapter.MsgAdapter;
+import com.example.shanpin.Adapter.PinListAdapter;
 import com.example.shanpin.R;
+import com.example.shanpin.bean.MsgContentBean;
 import com.example.shanpin.bean.PinBean;
 import com.example.shanpin.util.Okhttp;
 import com.example.shanpin.util.PictureUtil;
@@ -24,6 +32,8 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -41,12 +51,16 @@ public class PostActivity extends AppCompatActivity {
     private TextView P_genderLimit;
     private TextView P_timeStart;
     private TextView P_timeEnd;
-    private Button P_join;
+    private ImageView imageView;
 
-    private LinearLayout P_Member_icon;
+    private RecyclerView recyclerView;
+
     private String pinID;
     private View rootView;
     private PinBean pinBean;
+
+    private MsgAdapter adapter;
+    private List<MsgContentBean> mMsgList=new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +74,6 @@ public class PostActivity extends AppCompatActivity {
 
         rootView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_post, null);
 
-        //装载加入拼的人的头像布局，在这获取他们的头像并加入到布局中！！！
-        P_Member_icon=(LinearLayout) findViewById(R.id.Post_Member_icon);
-
 
         P_name = (TextView) findViewById(R.id.Post_Host_name);
         P_title = (TextView) findViewById(R.id.Post_title);
@@ -71,23 +82,33 @@ public class PostActivity extends AppCompatActivity {
         P_genderLimit = (TextView) findViewById(R.id.Post_Gender_Limit);
         P_timeStart = (TextView) findViewById(R.id.Post_timeStart);
         P_timeEnd = (TextView) findViewById(R.id.Post_End_Time);
-        P_join = (Button) findViewById(R.id.Post_Join);
+        imageView=findViewById(R.id.Post_Host_icon);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView=findViewById(R.id.activity_post_recyclerview);
+        recyclerView.setLayoutManager(layoutManager);
+
 
         pinID=getIntent().getStringExtra("pinID");
-        Log.d(TAG, "onCreate: pinID="+pinID);
+        String userID=getIntent().getStringExtra("userID");
+        adapter= new MsgAdapter(mMsgList,userID, this);
+        recyclerView.setAdapter(adapter);
+
         getPin(pinID);
 
 
-        //点击加入帖子！！！
-        P_join.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //加入按钮
-
-            }
-        });
-
         //点击发送评论！！！
+    }
+
+    //Toolbar item 按键响应
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            default:
+                break;
+        }
+        return true;
     }
 
     //将pinBean的东西设置到相应的控件上
@@ -95,7 +116,7 @@ public class PostActivity extends AppCompatActivity {
         P_name.setText(pinBean.getUserName());
         P_title.setText(pinBean.getTitle());
         P_content.setText(pinBean.getContent());
-        String memberText = "最少" + pinBean.getMember_min() + "人，最多" + pinBean.getMember_max() + "人";
+        String memberText =  pinBean.getMember_min() + "~" + pinBean.getMember_max() + "人";
         P_member.setText(memberText);
         String genderText = pinBean.getGender_limit();
         switch (genderText) {
@@ -110,10 +131,13 @@ public class PostActivity extends AppCompatActivity {
         }
         P_timeStart.setText(pinBean.getTime_start());
         P_timeEnd.setText(pinBean.getTime_end());
+        String pictureUrl=pinBean.getPicture();
+        if(pictureUrl!=null && !pictureUrl.isEmpty()){
+            PictureUtil.loadImageFromUrl(PostActivity.this,imageView,pictureUrl);
+        }
     }
 
     private void getPin(String pinID){
-
         final RequestBody requestBody=new FormBody.Builder()
                 .add("pinID",pinID)
                 .build();
@@ -132,7 +156,7 @@ public class PostActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText = response.body().string();
 //                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
-                Log.d("login", "onResponse: "+responseText);
+                Log.d("PostActivity", "onResponse: "+responseText);
                 if (!(responseText.equals("fail")||responseText.equals(""))){
                     pinBean=new Gson().fromJson(responseText,PinBean.class);
                     runOnUiThread(new Runnable() {

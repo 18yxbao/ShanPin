@@ -181,6 +181,19 @@ public class PictureUtil {
         return false;
     }
 
+    public static boolean readIconFromFile(Context context, ImageView imageView,String UserID){
+        BitmapFactory.Options op=new BitmapFactory.Options();
+        op.inPreferredConfig=Bitmap.Config.ARGB_4444;
+        String path=getIconPath(context,UserID);
+        Bitmap icon=BitmapFactory.decodeFile(path,op);//加载本地图片，并获取大小合适的bitmap
+
+        if (icon!=null){
+            imageView.setImageBitmap(icon);//将获取的图片设置到imagerview
+            return true;
+        }
+        return false;
+    }
+
     public static boolean readPictureFromFile(Context context, ImageView imageView,String path){
         BitmapFactory.Options op=new BitmapFactory.Options();
         op.inPreferredConfig=Bitmap.Config.ARGB_4444;
@@ -193,11 +206,27 @@ public class PictureUtil {
         return false;
     }
 
-    public static void loadImageFromUrl(ImageView imageView,String urlString) {
+    public static void loadImageFromUrl(final Activity activity, final ImageView imageView, String urlString) {
         Log.d(TAG, "loadImage: "+urlString);
         try {
-            URL url = new URL(urlString);
-            imageView.setImageBitmap(BitmapFactory.decodeStream(url.openStream()));
+            final URL url = new URL(urlString);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final Bitmap bitmap=BitmapFactory.decodeStream(url.openStream());
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                imageView.setImageBitmap(bitmap);
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

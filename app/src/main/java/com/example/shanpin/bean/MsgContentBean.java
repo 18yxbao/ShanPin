@@ -14,11 +14,20 @@ public class MsgContentBean {
     private String content;
     private String id;//不用管
     private String is_public;
+    private String name;
     private String pinID;
     private String time;
     private String userID;
     private String icon;
 
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     public String getContent() {
         return content;
     }

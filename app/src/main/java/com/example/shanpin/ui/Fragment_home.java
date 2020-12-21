@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,7 +45,7 @@ import okhttp3.Response;
 
 public class Fragment_home extends Fragment {
     private List<TagBean> tagList= new ArrayList<TagBean>();
-    private List<TextView> tagTextViewList = new ArrayList<TextView>();
+    private List<Button> tagButtonList = new ArrayList<Button>();
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton floatingActionButton;
@@ -98,20 +97,14 @@ public class Fragment_home extends Fragment {
     }
 
     private void initTag(){
-        tag_layout.setDividerPadding(5);
         for(int i=0 ; i< tagList.size();i++) {
-            TextView textView = new TextView(getContext());
-            textView.setTextSize(24);
-            textView.setPadding(10,5,10,5);
-            textView.setText(tagList.get(i).getName());
-            textView.setTag(tagList.get(i));
-            textView.setOnClickListener(tag_click);
-            textView.setBackgroundResource(R.color.color_background_grey);
-            tagTextViewList.add(textView);
-            tag_layout.addView(textView);
-//            View view=new View(getContext());
-//            view.setBackgroundColor(0XFFFFFF);
-//            tag_layout.addView(view);
+            Button button = new Button(getContext());
+            button.setText(tagList.get(i).getName());
+            button.setTag(tagList.get(i));
+            button.setOnClickListener(tag_click);
+            button.setBackgroundResource(R.color.color_background_grey);
+            tagButtonList.add(button);
+            tag_layout.addView(button);
         }
     }
 
@@ -119,9 +112,9 @@ public class Fragment_home extends Fragment {
     private View.OnClickListener tag_click =new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            for (int i = 0; i < tagTextViewList.size(); i++) {
-                TextView textView = tagTextViewList.get(i);
-                textView.setBackgroundResource(R.color.color_background_grey);
+            for (int i = 0; i < tagButtonList.size(); i++) {
+                Button button = tagButtonList.get(i);
+                button.setBackgroundResource(R.color.color_background_grey);
             }
             view.setBackgroundResource(R.color.colorPrimary);
             TagBean tag = (TagBean) view.getTag();
@@ -192,15 +185,6 @@ public class Fragment_home extends Fragment {
 
 
     private void initItems() {
-//        PinBean apple = new PinBean("apple", "123","2020年12月11日");
-//        itemList.add(apple);
-//        PinBean banana = new PinBean("apple", "123","2020年12月11日");
-//        banana.setTitle("banana");
-//        itemList.add(banana);
-//        PinBean pear = new PinBean("apple", "123","2020年12月11日");
-//        pear.setTitle("pear");
-//        itemList.add(pear);
-
         TagBean tag0 = new TagBean();
         tag0.setID("0");
         tag0.setName("全部");

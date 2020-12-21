@@ -33,30 +33,30 @@ public class MsgContentActivity extends AppCompatActivity {
         msgRecyclerView = (RecyclerView) findViewById(R.id.msg_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         msgRecyclerView.setLayoutManager(layoutManager);
-        adapter = new MsgAdapter(msgList);
-        msgRecyclerView.setAdapter(adapter);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String content = inputText.getText().toString();
-                if (!"".equals(content)) {
-                    MsgContentBean msg = new MsgContentBean(content,MsgContentBean.TYPE_SENT);
-                    msgList.add(msg);
-                    adapter.notifyItemInserted(msgList.size()-1);
-                    msgRecyclerView.scrollToPosition(msgList.size()-1);
-                    inputText.setText("");
-                }
-            }
-        });
+//        adapter = new MsgAdapter(msgList);
+//        msgRecyclerView.setAdapter(adapter);
+//        send.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String content = inputText.getText().toString();
+//                if (!"".equals(content)) {
+//                    MsgContentBean msg = new MsgContentBean(content,MsgContentBean.TYPE_SENT);
+//                    msgList.add(msg);
+//                    adapter.notifyItemInserted(msgList.size()-1);
+//                    msgRecyclerView.scrollToPosition(msgList.size()-1);
+//                    inputText.setText("");
+//                }
+//            }
+//        });
     }
 
     private void initMsgs() {
-        MsgContentBean msg1 = new MsgContentBean("Hello",MsgContentBean.TYPE_RECEIVED);
-        msgList.add(msg1);
-        MsgContentBean msg2 = new MsgContentBean("I'm John",MsgContentBean.TYPE_RECEIVED);
-        msgList.add(msg2);
-        MsgContentBean msg3 = new MsgContentBean("Hello",MsgContentBean.TYPE_SENT);
-        msgList.add(msg3);
+//        MsgContentBean msg1 = new MsgContentBean("Hello",MsgContentBean.TYPE_RECEIVED);
+//        msgList.add(msg1);
+//        MsgContentBean msg2 = new MsgContentBean("I'm John",MsgContentBean.TYPE_RECEIVED);
+//        msgList.add(msg2);
+//        MsgContentBean msg3 = new MsgContentBean("Hello",MsgContentBean.TYPE_SENT);
+//        msgList.add(msg3);
     }
 
 

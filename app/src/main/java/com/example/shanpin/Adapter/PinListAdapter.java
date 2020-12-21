@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.PinBean;
 import com.example.shanpin.ui.PostActivity;
+import com.example.shanpin.util.AccountUtil;
 
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class PinListAdapter extends RecyclerView.Adapter<PinListAdapter.ViewHold
             public void onClick(View v) {
                 Intent intent=new Intent(activity,PostActivity.class);
                 intent.putExtra("pinID",pinList.get(position).getPinID());
+                intent.putExtra("userID", AccountUtil.getAccount(activity));
                 activity.startActivity(intent);
             }
         });
