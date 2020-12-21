@@ -26,9 +26,9 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="71dp"
-                    android:layout_height="79dp"
-                    app:srcCompat="@drawable/login_image" />
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/icon" />
 
                 <Space
                     android:layout_width="match_parent"

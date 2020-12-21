@@ -18,5 +18,6 @@
     <color name="background_gray">#66000000</color>
     <color name="colorMainGreen">#40cab3</color>
     <color name="color_sky_blue">#80DEEA</color>
+    <color name="material_white">#dddddd</color>
 
 </resources>

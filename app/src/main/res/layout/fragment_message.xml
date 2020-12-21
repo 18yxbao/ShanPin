@@ -4,18 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="消息"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myrecyclerview"
+        android:id="@+id/fragment_message_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" />

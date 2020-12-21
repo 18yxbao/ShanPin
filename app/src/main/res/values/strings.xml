@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">汕拼</string>
+    <string name="publish">发帖</string>
+    <string name="Publish_title">标题</string>
+    <string name="Publish_tag">标签</string>
+    <string name="Publish_content">内容</string>
+    <string name="Publish_GenderLimit">性别</string>
+    <string name="Publish_MemberLimit">人数</string>
+    <string name="Publish_Member_Max">最大人数：</string>
+    <string name="Publish_Member_Min">最少人数</string>
+    <string name="Publish_Time_End">截止时间：</string>
+    <string name="Post_Join">加入</string>
+    <string name="Post_Chat_Input_Hint">在此输入公开讨论内容</string>
+    <string name="Post_Chat_Send">发送</string>
+    <string name="Post_title">拼内容</string>
 </resources>

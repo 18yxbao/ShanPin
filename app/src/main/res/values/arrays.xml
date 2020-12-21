@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="选择拼类型">
+<!--        <item>全部</item>-->
+        <item>拼车</item>
+        <item>拼单</item>
+        <item>拼自习室</item>
+        <item>拼运动</item>
+        <item>拼旅游</item>
+        <item>拼其他</item>
+    </string-array>
+
+</resources>

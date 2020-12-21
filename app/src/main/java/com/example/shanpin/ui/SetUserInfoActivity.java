@@ -381,17 +381,12 @@ public class SetUserInfoActivity extends AppCompatActivity{
 
     }
 
-    public void getImageURL(File imageFile){
-//        String imageUrl="";
-//        RequestBody fileBody=RequestBody.create(imageFile,MediaType.parse("multipart/form-data"));
-//        RequestBody fileBody=RequestBody.Companion.create(imageFile,MediaType.parse("application/octet-stream"));
+    private void getImageURL(File imageFile){
         RequestBody fileBody=RequestBody.Companion.create(imageFile,MediaType.parse("image/*"));
-
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("smfile", PictureUtil.changeImageName(imageFile.getName()), fileBody)
+                .addFormDataPart(imageFile.getName(), PictureUtil.changeImageName(imageFile.getName()), fileBody)
                 .build();
-
         Callback callback=new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -407,22 +402,54 @@ public class SetUserInfoActivity extends AppCompatActivity{
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseText=response.body().string();
                 Log.d("PictureUtil", "上传图片: "+responseText);
-                ImageBean imageBean=new Gson().fromJson(responseText,ImageBean.class);
-                updateIcon(imageBean.getData().getUrl());
-
+                updateIcon(responseText);
             }
         };
-        String url="https://sm.ms/api/v2/upload";
+        String url="http://119.29.136.236:8080/ShanPin/ImageServlet";
         Request request= new Request.Builder()
 //                .addHeader("Content-Type","image/*")
 //                .addHeader("Conftent-Type","multipart/form-data")
-                .addHeader("Authorization","ZMDFAoUIX8Y73ePNfSUQ9eWwk8QMiLwM")
-                .addHeader("user-agent","ShanPin/1.0.0")
                 .url(url).post(requestBody)
                 .build();
         Okhttp.getOkHttpClient().newCall(request).enqueue(callback);
-//        return imageUrl;
     }
+
+//    public void getImageURL(File imageFile){
+//        RequestBody fileBody=RequestBody.Companion.create(imageFile,MediaType.parse("image/*"));
+//        RequestBody requestBody = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("smfile", PictureUtil.changeImageName(imageFile.getName()), fileBody)
+//                .build();
+//        Callback callback=new Callback() {
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(SetUserInfoActivity.this,"上传图片失败",Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//                String responseText=response.body().string();
+//                Log.d("PictureUtil", "上传图片: "+responseText);
+//                ImageBean imageBean=new Gson().fromJson(responseText,ImageBean.class);
+//                updateIcon(imageBean.getData().getUrl());
+//
+//            }
+//        };
+//        String url="https://sm.ms/api/v2/upload";
+//        Request request= new Request.Builder()
+////                .addHeader("Content-Type","image/*")
+////                .addHeader("Conftent-Type","multipart/form-data")
+//                .addHeader("Authorization","ZMDFAoUIX8Y73ePNfSUQ9eWwk8QMiLwM")
+//                .addHeader("user-agent","ShanPin/1.0.0")
+//                .url(url).post(requestBody)
+//                .build();
+//        Okhttp.getOkHttpClient().newCall(request).enqueue(callback);
+//    }
 
     private void updateIcon(String icon){
         RequestBody requestBody=new FormBody.Builder()

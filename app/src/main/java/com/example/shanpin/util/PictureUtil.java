@@ -244,26 +244,28 @@ public class PictureUtil {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                final InputStream is=response.body().byteStream();
-                int len=0;
+//                final InputStream is=response.body().byteStream();
+                byte[] bytes=response.body().bytes();
                 File file=new File(filename);
 //                if (!file.exists()){
 //                    file.createNewFile();
 //                }
                 FileOutputStream fos=new FileOutputStream(file);
-                byte[] buf=new byte[128];
-                while ((len=is.read(buf))!=-1){
-                    fos.write(buf);
-                }
+//                byte[] buf=new byte[128];
+//                while (is.read(buf)!=-1){
+//                    fos.write(buf);
+//                }
+                fos.write(bytes);
                 fos.flush();
                 fos.close();
-                is.close();
+//                is.close();
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         readPictureFromFile(activity,imageView,filename);
                     }
                 });
+
             }
         };
         Okhttp.sentGet(url,callback);

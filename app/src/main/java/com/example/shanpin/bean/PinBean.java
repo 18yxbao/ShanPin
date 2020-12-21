@@ -3,7 +3,7 @@ package com.example.shanpin.bean;
 import java.util.Date;
 
 public class PinBean {
-    private String PinID;
+    private String pinID;
     private String userID;
     private String userName;
     private String tagID;
@@ -23,20 +23,15 @@ public class PinBean {
         this.time_start=Time;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public PinBean() {
     }
 
     public String getPinID() {
-        return PinID;
+        return pinID;
     }
 
     public void setPinID(String pinID) {
-        PinID = pinID;
+        this.pinID = pinID;
     }
 
     public String getUserID() {
@@ -45,6 +40,14 @@ public class PinBean {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getTagID() {
@@ -126,5 +129,4 @@ public class PinBean {
     public void setStatus(String status) {
         this.status = status;
     }
-
 }

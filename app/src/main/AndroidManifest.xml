@@ -13,7 +13,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/login_image"
+        android:icon="@drawable/icon"
         android:label="汕拼"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -21,12 +21,14 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.ShanPin">
 
+        <activity android:name=".ui.ChatActivity"/>
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.EnterActivity" />
         <activity android:name=".ui.InputActivity"/>
-        <activity android:name=".ui.SetUserInfoActivity">
-
-        </activity>
+        <activity android:name=".ui.SetUserInfoActivity"/>
+        <activity android:name=".ui.PostActivity"/>
+        <activity android:name=".ui.PublishActivity"/>
+        <activity android:name=".ui.MsgContentActivity"/>
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
