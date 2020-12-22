@@ -189,7 +189,7 @@ public class PublishActivity extends AppCompatActivity {
 //                        Toast.makeText(getApplicationContext(), "取消", Toast.LENGTH_SHORT).show();
                     }
                 });
-
+                dialog.show();
                 return true;
             }
         });

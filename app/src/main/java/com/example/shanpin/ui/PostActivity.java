@@ -24,15 +24,19 @@ import com.example.shanpin.Adapter.PinListAdapter;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MsgContentBean;
 import com.example.shanpin.bean.PinBean;
+import com.example.shanpin.util.AccountUtil;
 import com.example.shanpin.util.Okhttp;
 import com.example.shanpin.util.PictureUtil;
 import com.example.shanpin.util.ToastUtil;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.Call;
@@ -52,6 +56,8 @@ public class PostActivity extends AppCompatActivity {
     private TextView P_timeStart;
     private TextView P_timeEnd;
     private ImageView imageView;
+    private EditText editText;
+    private Button sendButton;
 
     private RecyclerView recyclerView;
 
@@ -83,6 +89,8 @@ public class PostActivity extends AppCompatActivity {
         P_timeStart = (TextView) findViewById(R.id.Post_timeStart);
         P_timeEnd = (TextView) findViewById(R.id.Post_End_Time);
         imageView=findViewById(R.id.Post_Host_icon);
+        editText=findViewById(R.id.Post_Chat_EditText);
+        sendButton=findViewById(R.id.Post_Chat_Send);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView=findViewById(R.id.activity_post_recyclerview);
@@ -95,9 +103,27 @@ public class PostActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         getPin(pinID);
+        getTalk(pinID,"0");
 
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date curDate = new Date(System.currentTimeMillis());
+                String time = formatter.format(curDate);
+                String content =editText.getText().toString();
 
-        //点击发送评论！！！
+                MsgContentBean msgContentBean=new MsgContentBean();
+                msgContentBean.setName(AccountUtil.getUserInfo(PostActivity.this).getName());
+                msgContentBean.setPinID(pinID);
+                msgContentBean.setUserID(AccountUtil.getAccount(PostActivity.this));
+                msgContentBean.setTime(time);
+                msgContentBean.setContent(content);
+                msgContentBean.setIs_public("0");
+
+                sendTalk(msgContentBean);
+            }
+        });
     }
 
     //Toolbar item 按键响应
@@ -179,6 +205,88 @@ public class PostActivity extends AppCompatActivity {
         Okhttp.sentPost(url,requestBody,callback);
     }
 
+    private void getTalk(String pinID,String is_public){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("pinID",pinID)
+                .add("is_public",is_public)
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+//                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
+                Log.d("PostActivity", "onResponse: "+responseText);
+                if (!(responseText.equals("fail")||responseText.equals(""))){
+                    mMsgList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MsgContentBean>>(){}.getType());
+                    adapter.setmMsgList(mMsgList);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showShort(PostActivity.this,responseText);
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/GetTalk";
+        Okhttp.sentPost(url,requestBody,callback);
+    }
+
+    private void sendTalk(final MsgContentBean msgContentBean){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("pinID",msgContentBean.getPinID())
+                .add("userID",msgContentBean.getUserID())
+                .add("time",msgContentBean.getTime())
+                .add("content",msgContentBean.getContent())
+                .add("is_public",msgContentBean.getIs_public())
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+                Log.d(TAG, "sendTalk:onResponse: "+responseText);
+                if (response.equals("success")){
+                    mMsgList.add(msgContentBean);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            editText.setText("");
+                            adapter.notifyItemInserted(mMsgList.size());
+                            ToastUtil.showShort(PostActivity.this,responseText);
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/SendTalk";
+        Okhttp.sentPost(url,requestBody,callback);
+    }
 
 }

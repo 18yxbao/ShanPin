@@ -50,6 +50,10 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         this.activity=activity;
     }
 
+    public void setmMsgList(List<MsgContentBean> mMsgList) {
+        this.mMsgList = mMsgList;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_msg,parent,false);
@@ -61,7 +65,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder holder, int position) {
         MsgContentBean msg = this.mMsgList.get(position);
 
-        if (UserID.equals(msg.getUserID())) {
+        if (!UserID.equals(msg.getUserID())) {
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);
             holder.leftMsg.setText(msg.getContent());
