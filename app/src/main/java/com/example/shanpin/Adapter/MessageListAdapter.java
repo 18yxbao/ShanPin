@@ -1,5 +1,6 @@
 package com.example.shanpin.Adapter;
 
+import android.content.Intent;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MessageBean;
 import com.example.shanpin.bean.PinBean;
+import com.example.shanpin.ui.MessageActivity;
 
 import java.util.List;
 
@@ -20,18 +22,12 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     private List<MessageBean> messageList;
     static class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView messageImage;
         TextView messageName;
-        TextView messageContent;
-        TextView messageTime;
 
         public ViewHolder (View view)
         {
             super(view);
-            messageImage = (ImageView) view.findViewById(R.id.item_message_Image);
             messageName = (TextView) view.findViewById(R.id.item_message_Name);
-            messageContent=view.findViewById(R.id.item_message_Content);
-            messageTime=view.findViewById(R.id.item_message_Date);
         }
     }
 
@@ -39,63 +35,32 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         this.messageList = itemList;
     }
 
-    public interface OnItemClickLitener {
-        void onItemClick(View view, int position);
-        void onItemLongClick(View view, int position);
-    }
 
-    private OnItemClickLitener mOnItemClickLitener;
-
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener)
-    {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message,parent,false);
-//        view.setOnClickListener();
-        return new ViewHolder(view);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message,parent,false);
+        final ViewHolder holder = new ViewHolder(view);
+        final int position =holder.getAdapterPosition();
+        holder.messageName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(view.getContext(),MessageActivity.class);
+                intent.putExtra("pinID",messageList.get(position).getPinID());
+                view.getContext().startActivity(intent);
+            }
+        });
+        return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         MessageBean item = this.messageList.get(position);
-        holder.messageContent.setText(item.getContent());
         holder.messageName.setText(item.getTitle());
-        holder.messageTime.setText(item.getTime());
-
-        if (mOnItemClickLitener != null)
-        {
-            holder.itemView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-
-                }
-            });
-
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener()
-            {
-                @Override
-                public boolean onLongClick(View v)
-                {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
-                    return false;
-                }
-            });
-        }
-
-
 
     }
 
     @Override
     public int getItemCount() {
-        return this.messageList.size();
+        return messageList.size();
     }
 }

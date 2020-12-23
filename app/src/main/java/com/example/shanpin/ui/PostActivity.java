@@ -148,7 +148,8 @@ public class PostActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
+            case android.R.id.home:
+                onBackPressed();
             default:
                 break;
         }
@@ -298,7 +299,6 @@ public class PostActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText = response.body().string();
                 Log.d(TAG, "sendTalk:onResponse: "+responseText);
-
             }
         };
         String url="http://119.29.136.236:8080/ShanPin/SendTalk";

@@ -34,7 +34,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         TextView rightName;
         ImageView leftIcon;
         ImageView rightIcon;
-        int position;
+//        int position;
         public ViewHolder(View view) {
             super(view);
             leftLayout = (LinearLayout) view.findViewById(R.id.msg_left_msgitem);
@@ -64,7 +64,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         View.OnClickListener click = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = holder.position;
+                int position = holder.getAdapterPosition();
                 MsgContentBean msg = mMsgList.get(position);
                 Context context = view.getContext();
                 Intent intent = new Intent(context, ShowUserMsgActivity.class);
@@ -76,7 +76,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         holder.leftIcon.setOnClickListener(click);
         holder.rightIcon.setOnClickListener(click);
 
-        return new ViewHolder(view);
+        return holder;
     }
 
     @Override
