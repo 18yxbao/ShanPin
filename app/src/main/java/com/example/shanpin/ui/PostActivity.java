@@ -1,6 +1,7 @@
 package com.example.shanpin.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,6 +57,8 @@ public class PostActivity extends AppCompatActivity {
     private TextView P_timeStart;
     private TextView P_timeEnd;
     private ImageView imageView;
+    private ImageView icon;
+
     private EditText editText;
     private Button sendButton;
 
@@ -88,40 +91,55 @@ public class PostActivity extends AppCompatActivity {
         P_genderLimit = (TextView) findViewById(R.id.Post_Gender_Limit);
         P_timeStart = (TextView) findViewById(R.id.Post_timeStart);
         P_timeEnd = (TextView) findViewById(R.id.Post_End_Time);
-        imageView=findViewById(R.id.Post_Host_icon);
-        editText=findViewById(R.id.Post_Chat_EditText);
-        sendButton=findViewById(R.id.Post_Chat_Send);
+        imageView = findViewById(R.id.activity_post_imageView);
+        icon = findViewById(R.id.Post_Host_icon);
+        editText = findViewById(R.id.Post_Chat_EditText);
+        sendButton = findViewById(R.id.Post_Chat_Send);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView=findViewById(R.id.activity_post_recyclerview);
+        recyclerView = findViewById(R.id.activity_post_recyclerview);
         recyclerView.setLayoutManager(layoutManager);
 
 
-        pinID=getIntent().getStringExtra("pinID");
-        String userID=getIntent().getStringExtra("userID");
-        adapter= new MsgAdapter(mMsgList,userID, this);
+        pinID = getIntent().getStringExtra("pinID");
+        String userID = getIntent().getStringExtra("userID");
+        adapter = new MsgAdapter(mMsgList, userID, this);
         recyclerView.setAdapter(adapter);
 
         getPin(pinID);
-        getTalk(pinID,"0");
+        getTalk(pinID, "0");
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SimpleDateFormat formatter =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date curDate = new Date(System.currentTimeMillis());
-                String time = formatter.format(curDate);
-                String content =editText.getText().toString();
+                String content = editText.getText().toString();
+                if (!content.equals("")) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date curDate = new Date(System.currentTimeMillis());
+                    String time = formatter.format(curDate);
+                    MsgContentBean msgContentBean = new MsgContentBean();
+                    msgContentBean.setName(AccountUtil.getUserInfo(PostActivity.this).getName());
+                    msgContentBean.setPinID(pinID);
+                    msgContentBean.setUserID(AccountUtil.getAccount(PostActivity.this));
+                    msgContentBean.setTime(time);
+                    msgContentBean.setContent(content);
+                    msgContentBean.setIs_public("0");
+                    sendTalk(msgContentBean);
+                    mMsgList.add(msgContentBean);
+                    adapter.notifyItemInserted(0);
+                    editText.setText("");
+                } else {
+                    Toast.makeText(getApplicationContext(), "发送内容为空", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-                MsgContentBean msgContentBean=new MsgContentBean();
-                msgContentBean.setName(AccountUtil.getUserInfo(PostActivity.this).getName());
-                msgContentBean.setPinID(pinID);
-                msgContentBean.setUserID(AccountUtil.getAccount(PostActivity.this));
-                msgContentBean.setTime(time);
-                msgContentBean.setContent(content);
-                msgContentBean.setIs_public("0");
-
-                sendTalk(msgContentBean);
+        icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ShowUserMsgActivity.class);
+                intent.putExtra("UserID",pinBean.getUserID());
+                startActivity(intent);
             }
         });
     }
@@ -161,6 +179,14 @@ public class PostActivity extends AppCompatActivity {
         if(pictureUrl!=null && !pictureUrl.isEmpty()){
             PictureUtil.loadImageFromUrl(PostActivity.this,imageView,pictureUrl);
         }
+
+        /*
+        if ((!PictureUtil.readIconFromFile(getApplicationContext(), icon)) && getIcon() != null && (!getIcon().isEmpty())) {
+            PictureUtil.downloadImage(getIcon(), PictureUtil.getIconPath(getApplicationContext()), this, icon);
+        }
+        */
+
+
     }
 
     private void getPin(String pinID){
@@ -227,8 +253,8 @@ public class PostActivity extends AppCompatActivity {
 //                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
                 Log.d("PostActivity", "onResponse: "+responseText);
                 if (!(responseText.equals("fail")||responseText.equals(""))){
-                    mMsgList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MsgContentBean>>(){}.getType());
-                    adapter.setmMsgList(mMsgList);
+                    List<MsgContentBean> mMsgList_temp =new Gson().fromJson(responseText,new TypeToken<ArrayList<MsgContentBean>>(){}.getType());
+                    mMsgList.addAll(mMsgList_temp);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -272,17 +298,7 @@ public class PostActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText = response.body().string();
                 Log.d(TAG, "sendTalk:onResponse: "+responseText);
-                if (response.equals("success")){
-                    mMsgList.add(msgContentBean);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            editText.setText("");
-                            adapter.notifyItemInserted(mMsgList.size());
-                            ToastUtil.showShort(PostActivity.this,responseText);
-                        }
-                    });
-                }
+
             }
         };
         String url="http://119.29.136.236:8080/ShanPin/SendTalk";

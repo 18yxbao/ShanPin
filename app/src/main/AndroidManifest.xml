@@ -2,49 +2,52 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.shanpin">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="汕拼"
+        android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.ShanPin">
-
-        <activity android:name=".ui.ChatActivity"/>
+        android:theme="@style/Theme.ShanPin"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ui.ScoreActivity"></activity>
+        <activity android:name=".ui.ShowUserMsgActivity" />
+        <activity android:name=".ui.ChatActivity" />
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.EnterActivity" />
-        <activity android:name=".ui.InputActivity"/>
-        <activity android:name=".ui.SetUserInfoActivity"/>
-        <activity android:name=".ui.PostActivity"/>
-        <activity android:name=".ui.PublishActivity"/>
-        <activity android:name=".ui.MsgContentActivity"/>
+        <activity android:name=".ui.InputActivity" />
+        <activity android:name=".ui.SetUserInfoActivity" />
+        <activity android:name=".ui.PostActivity" />
+        <activity android:name=".ui.PublishActivity" />
+        <activity android:name=".ui.MsgContentActivity" />
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.shanpin.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

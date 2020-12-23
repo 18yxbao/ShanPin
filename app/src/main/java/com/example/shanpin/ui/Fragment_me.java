@@ -20,6 +20,9 @@ import com.example.shanpin.util.PictureUtil;
 public class Fragment_me extends Fragment {
     private LinearLayout mysetting;
     private LinearLayout outload;
+    private LinearLayout setting;
+
+
     private TextView account_text;
     private TextView name_text;
     private ImageView imageView;
@@ -29,6 +32,7 @@ public class Fragment_me extends Fragment {
         View view = inflater.inflate(R.layout.fragment_me, container, false);
         mysetting=(LinearLayout) view.findViewById(R.id.fragment_me_mysetting);
         outload=(LinearLayout) view.findViewById(R.id.fragment_me_outload);
+        setting =(LinearLayout) view.findViewById(R.id.fragment_me_setting);
 
         account_text=(TextView) view.findViewById(R.id.fragment_me_account);
         name_text=(TextView) view.findViewById(R.id.fragment_me_name);
@@ -44,7 +48,7 @@ public class Fragment_me extends Fragment {
 
         mysetting.setOnClickListener(click);
         outload.setOnClickListener(click);
-
+        setting.setOnClickListener(click);
 
         return view;
     }
@@ -69,6 +73,10 @@ public class Fragment_me extends Fragment {
                     intent=new Intent(view.getContext(), LoginActivity.class);
                     view.getContext().startActivity(intent);
                     getActivity().finish();
+                    break;
+                case R.id.fragment_me_setting:
+                    intent=new Intent(view.getContext(),ScoreActivity.class);
+                    view.getContext().startActivity(intent);
                     break;
 
             }

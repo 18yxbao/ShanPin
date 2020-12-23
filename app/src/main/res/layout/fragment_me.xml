@@ -54,6 +54,30 @@
         </LinearLayout>
     </LinearLayout>
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp" />
+
+    <LinearLayout
+        android:id="@+id/fragment_me_setting"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/long_button_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft='15dp'
+            android:layout_marginRight='20dp'
+            app:srcCompat="@android:drawable/ic_menu_manage" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/fragment_me_outload"
         android:layout_width="match_parent"
@@ -74,29 +98,6 @@
             android:layout_height="wrap_content"
             android:text="退出登陆" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/long_button_height"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft='15dp'
-            android:layout_marginRight='20dp'
-            app:srcCompat="@android:drawable/ic_menu_manage" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设置" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
 
     <TextView
         android:layout_width="match_parent"

@@ -2,6 +2,7 @@ package com.example.shanpin.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.shanpin.bean.MsgContentBean;
 
 import com.example.shanpin.R;
+import com.example.shanpin.ui.ShowUserMsgActivity;
 import com.example.shanpin.util.PictureUtil;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     private List<MsgContentBean> mMsgList;
     private String  UserID;
     private Activity activity;
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout leftLayout;
         LinearLayout rightLayout;
@@ -31,6 +34,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         TextView rightName;
         ImageView leftIcon;
         ImageView rightIcon;
+        int position;
         public ViewHolder(View view) {
             super(view);
             leftLayout = (LinearLayout) view.findViewById(R.id.msg_left_msgitem);
@@ -42,6 +46,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             leftIcon=view.findViewById(R.id.msg_left_icon);
             rightIcon=view.findViewById(R.id.msg_right_icon);
         }
+
     }
 
     public MsgAdapter(List<MsgContentBean> msgList, String UserID, Activity activity) {
@@ -50,38 +55,55 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
         this.activity=activity;
     }
 
-    public void setmMsgList(List<MsgContentBean> mMsgList) {
-        this.mMsgList = mMsgList;
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_msg,parent,false);
         final ViewHolder holder = new ViewHolder(view);
+
+
+        View.OnClickListener click = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = holder.position;
+                MsgContentBean msg = mMsgList.get(position);
+                Context context = view.getContext();
+                Intent intent = new Intent(context, ShowUserMsgActivity.class);
+                intent.putExtra("UserID",msg.getUserID());
+                context.startActivity(intent);
+            }
+        };
+
+        holder.leftIcon.setOnClickListener(click);
+        holder.rightIcon.setOnClickListener(click);
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MsgContentBean msg = this.mMsgList.get(position);
-
         if (!UserID.equals(msg.getUserID())) {
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);
             holder.leftMsg.setText(msg.getContent());
             holder.leftName.setText(msg.getName());
-            if ((!PictureUtil.readIconFromFile(activity.getApplicationContext(), holder.leftIcon)) && msg.getIcon() != null && (!msg.getIcon().isEmpty())) {
-                PictureUtil.downloadImage(msg.getIcon(), PictureUtil.getIconPath(activity), activity, holder.leftIcon);
+
+            if ((!PictureUtil.readIconFromFile(activity.getApplicationContext(), holder.leftIcon,msg.getUserID())) && msg.getIcon() != null && (!msg.getIcon().isEmpty())) {
+                PictureUtil.downloadImage(msg.getIcon(), PictureUtil.getIconPath(activity,msg.getUserID()), activity, holder.leftIcon);
             }
+
+
         }
         else {
             holder.rightLayout.setVisibility(View.VISIBLE);
             holder.leftLayout.setVisibility(View.GONE);
             holder.rihgtMsg.setText(msg.getContent());
             holder.rightName.setText(msg.getName());
-            if ((!PictureUtil.readIconFromFile(activity.getApplicationContext(), holder.rightIcon)) && msg.getIcon() != null && (!msg.getIcon().isEmpty())) {
-                PictureUtil.downloadImage(msg.getIcon(), PictureUtil.getIconPath(activity), activity, holder.rightIcon);
+            if ((!PictureUtil.readIconFromFile(activity.getApplicationContext(), holder.rightIcon,msg.getUserID())) && msg.getIcon() != null && (!msg.getIcon().isEmpty())) {
+                PictureUtil.downloadImage(msg.getIcon(), PictureUtil.getIconPath(activity,msg.getUserID()), activity, holder.rightIcon);
             }
+
+
         }
     }
 
@@ -89,4 +111,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     public int getItemCount() {
         return mMsgList.size();
     }
+
+
+
 }

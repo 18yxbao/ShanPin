@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         String url="http://119.29.136.236:8080/ShanPin/Login";
         Okhttp.sentPost(url,requestBody,callback);
     }
+
     private void getUserInfo(String userID){
         UserBean userBean=new UserBean();
         Log.d("TAG", "getUserInfo: "+userID);
