@@ -1,32 +1,29 @@
 package com.example.shanpin.ui;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.example.shanpin.Adapter.CreateAndJoinAdapter;
 import com.example.shanpin.Adapter.MessageListAdapter;
+import com.example.shanpin.Adapter.MsgAdapter;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MessageBean;
 import com.example.shanpin.bean.MsgContentBean;
 import com.example.shanpin.util.AccountUtil;
 import com.example.shanpin.util.Okhttp;
-import com.example.shanpin.util.PictureUtil;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,49 +35,69 @@ import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class Fragment_message extends Fragment {
+/**
+ * 在设置界面看自己创建或者加入的pinlist的activity
+ */
+public class CreateAndJoinActivity extends AppCompatActivity {
 
+    private static final String TAG ="CreateAndJoinActivity";
+    private Toolbar toolbar;
 
-    //定义一个帖子列表作为数据源
     private List<MessageBean> messageBeanList= new ArrayList<MessageBean>();
     private RecyclerView recyclerView;
-    private MessageListAdapter messageListAdapter;
+    private CreateAndJoinAdapter createAndJoinAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    private String mode;    //"0"是创建的拼，"1"是加入的拼
+    private String suffix;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view =inflater.inflate(R.layout.fragment_message,container,false);
-        recyclerView=view.findViewById(R.id.fragment_message__recycler_view);
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(view.getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        messageListAdapter=new MessageListAdapter(messageBeanList);
-        recyclerView.setAdapter(messageListAdapter);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_and_join);
 
-        swipeRefreshLayout=view.findViewById(R.id.fragment_message_swipeRefreshLayout);
+        mode=getIntent().getStringExtra("mode");
+
+        toolbar = findViewById(R.id.activity_createandjion_toolbar);
+        if(mode.equals("0")){
+            toolbar.setTitle("我创建的拼");
+            suffix="GetCreatePinList";
+        }else {
+            toolbar.setTitle("我加入的拼");
+            suffix="GetJoinPinList";
+        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        recyclerView=findViewById(R.id.activity_createandjion__recycler_view);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(CreateAndJoinActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        createAndJoinAdapter=new CreateAndJoinAdapter(messageBeanList);
+        recyclerView.setAdapter(createAndJoinAdapter);
+
+        swipeRefreshLayout=findViewById(R.id.activity_createandjion_swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getTalkList();
+                getList(suffix);
             }
         });
-        getTalkList();
-        return view;
+        getList(suffix);
     }
 
-
-    private void getTalkList(){
+    private void getList(String suffix){
         RequestBody requestBody=new FormBody.Builder()
-                .add("userID",AccountUtil.getAccount(getActivity()))
+                .add("userID",AccountUtil.getAccount(CreateAndJoinActivity.this))
                 .build();
         Callback callback=new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 //                                Toast.makeText(LoginActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
-                getActivity().runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(),"请检查你的网络",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateAndJoinActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
                     }
                 });
                 Log.d("getTalkList", "onResponse: "+"请检查你的网络");
@@ -98,19 +115,18 @@ public class Fragment_message extends Fragment {
 //                    List<MessageBean> tempList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MessageBean>>(){}.getType());
 //                    messageBeanList.addAll(tempList);
                     Log.d("Fragment_message", "getTalkList:messageBeanList: "+messageBeanList.toString());
-                    getActivity().runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
 //                            messageListAdapter.notifyDataSetChanged();
-                            messageListAdapter.setMessageList(messageBeanList);
+                            createAndJoinAdapter.setMessageList(messageBeanList);
                         }
                     });
 
                 }
             }
         };
-        String url="http://119.29.136.236:8080/ShanPin/GetTalkList";
+        String url="http://119.29.136.236:8080/ShanPin/"+suffix;
         Okhttp.sentPost(url,requestBody,callback);
     }
-
 }

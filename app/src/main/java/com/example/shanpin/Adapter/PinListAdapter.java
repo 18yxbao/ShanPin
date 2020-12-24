@@ -53,8 +53,19 @@ public class PinListAdapter extends RecyclerView.Adapter<PinListAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pin,parent,false);
+        final ViewHolder holder=new ViewHolder(view);
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position=holder.getAdapterPosition();
+                Intent intent=new Intent(activity,PostActivity.class);
+                intent.putExtra("pinID",pinList.get(position).getPinID());
+                intent.putExtra("userID", AccountUtil.getAccount(activity));
+                activity.startActivity(intent);
+            }
+        });
         //holder.itemView.setOnClickListener();
-        return new ViewHolder(view);
+        return holder;
     }
 
     @Override
@@ -63,15 +74,6 @@ public class PinListAdapter extends RecyclerView.Adapter<PinListAdapter.ViewHold
         holder.itemName.setText(item.getTitle());
         holder.itemMaster.setText(item.getUserID());
         holder.itemTime.setText(item.getTime_start());
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(activity,PostActivity.class);
-                intent.putExtra("pinID",pinList.get(position).getPinID());
-                intent.putExtra("userID", AccountUtil.getAccount(activity));
-                activity.startActivity(intent);
-            }
-        });
     }
 
     @Override

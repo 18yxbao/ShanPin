@@ -21,6 +21,8 @@ public class Fragment_me extends Fragment {
     private LinearLayout mysetting;
     private LinearLayout outload;
     private LinearLayout setting;
+    private LinearLayout createPin;
+    private LinearLayout joinPin;
 
 
     private TextView account_text;
@@ -33,6 +35,8 @@ public class Fragment_me extends Fragment {
         mysetting=(LinearLayout) view.findViewById(R.id.fragment_me_mysetting);
         outload=(LinearLayout) view.findViewById(R.id.fragment_me_outload);
         setting =(LinearLayout) view.findViewById(R.id.fragment_me_setting);
+        createPin=(LinearLayout) view.findViewById(R.id.fragment_me_createPin);
+        joinPin =(LinearLayout) view.findViewById(R.id.fragment_me_joinPin);
 
         account_text=(TextView) view.findViewById(R.id.fragment_me_account);
         name_text=(TextView) view.findViewById(R.id.fragment_me_name);
@@ -49,7 +53,8 @@ public class Fragment_me extends Fragment {
         mysetting.setOnClickListener(click);
         outload.setOnClickListener(click);
         setting.setOnClickListener(click);
-
+        createPin.setOnClickListener(click);
+        joinPin.setOnClickListener(click);
         return view;
     }
 
@@ -78,7 +83,17 @@ public class Fragment_me extends Fragment {
                     intent=new Intent(view.getContext(),ScoreActivity.class);
                     view.getContext().startActivity(intent);
                     break;
+                case R.id.fragment_me_createPin:
+                    intent=new Intent(view.getContext(),CreateAndJoinActivity.class);
+                    intent.putExtra("mode","0");
+                    view.getContext().startActivity(intent);
+                    break;
 
+                case R.id.fragment_me_joinPin:
+                    intent=new Intent(view.getContext(),CreateAndJoinActivity.class);
+                    intent.putExtra("mode","1");
+                    view.getContext().startActivity(intent);
+                    break;
             }
         }
     };

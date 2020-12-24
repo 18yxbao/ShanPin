@@ -1,24 +1,22 @@
 package com.example.shanpin.Adapter;
 
 import android.content.Intent;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MessageBean;
-import com.example.shanpin.bean.PinBean;
 import com.example.shanpin.ui.MessageActivity;
+import com.example.shanpin.ui.PostActivity;
+import com.example.shanpin.util.AccountUtil;
 
 import java.util.List;
 
-public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.ViewHolder>{
+public class CreateAndJoinAdapter extends RecyclerView.Adapter<CreateAndJoinAdapter.ViewHolder>{
 
     private List<MessageBean> messageList;
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -31,7 +29,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         }
     }
 
-    public MessageListAdapter(List<MessageBean> itemList){
+    public CreateAndJoinAdapter(List<MessageBean> itemList){
         this.messageList = itemList;
     }
 
@@ -48,9 +46,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             @Override
             public void onClick(View v) {
                 int position =holder.getAdapterPosition();
-                Intent intent=new Intent(view.getContext(),MessageActivity.class);
+                Intent intent=new Intent(view.getContext(), PostActivity.class);
                 intent.putExtra("pinID",messageList.get(position).getPinID());
-                intent.putExtra("title",messageList.get(position).getTitle());
+                intent.putExtra("userID", AccountUtil.getAccount(view.getContext()));
                 view.getContext().startActivity(intent);
             }
         });

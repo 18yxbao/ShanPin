@@ -2,6 +2,7 @@ package com.example.shanpin.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -44,24 +45,29 @@ public class MessageActivity extends AppCompatActivity {
     private MsgAdapter adapter;
     private List<MsgContentBean> mMsgList=new ArrayList<>();
     private String pinID;
+    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        toolbar = findViewById(R.id.activity_post_toolbar);
-        toolbar.setTitle("拼详情");
+        pinID=getIntent().getStringExtra("pinID");
+        title=getIntent().getStringExtra("title");
+
+        toolbar = findViewById(R.id.activity_message_toolbar);
+        toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         editText=findViewById(R.id.activity_message_editText);
         sendButton=findViewById(R.id.activity_message_send);
         recyclerView=findViewById(R.id.activity_message_recyclerview);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(MessageActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
         adapter=new MsgAdapter(mMsgList, AccountUtil.getAccount(MessageActivity.this),MessageActivity.this);
         recyclerView.setAdapter(adapter);
 
-        pinID=getIntent().getStringExtra("pinID");
         getTalk(pinID,"1");
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +87,7 @@ public class MessageActivity extends AppCompatActivity {
                     msgContentBean.setIs_public("1");
                     sendTalk(msgContentBean);
                     mMsgList.add(msgContentBean);
-                    adapter.notifyItemInserted(0);
+                    adapter.notifyItemInserted(mMsgList.size());
                     editText.setText("");
                 } else {
                     Toast.makeText(getApplicationContext(), "发送内容为空", Toast.LENGTH_SHORT).show();

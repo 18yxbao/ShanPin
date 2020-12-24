@@ -4,14 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/activity_createandjion_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/fragment_message_swipeRefreshLayout"
+        android:id="@+id/activity_createandjion_swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fragment_message__recycler_view"
+            android:id="@+id/activity_createandjion__recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />

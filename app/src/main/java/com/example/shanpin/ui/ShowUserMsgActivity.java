@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -58,12 +59,10 @@ public class ShowUserMsgActivity extends AppCompatActivity {
 
         //toolbar栏
         toolbar = findViewById(R.id.activity_setuserinfo_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         UserID =getIntent().getStringExtra("UserID");
-
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         set_icon = (LinearLayout) findViewById(R.id.activity_setuserinfo_seticon);
         set_name = (LinearLayout) findViewById(R.id.activity_setuserinfo_setname);
         set_email = (LinearLayout) findViewById(R.id.activity_setuserinfo_setemail);
@@ -81,6 +80,17 @@ public class ShowUserMsgActivity extends AppCompatActivity {
 
         getUserInfo(UserID);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+            default:
+                break;
+        }
+        return true;
     }
 
     private void getUserInfo(String userID){

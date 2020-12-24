@@ -24,5 +24,11 @@ public class MessageBean {
         this.title = title;
     }
 
-
+    @Override
+    public String toString() {
+        return "MessageBean{" +
+                "pinID='" + pinID + '\'' +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }
