@@ -1,16 +1,14 @@
 package com.example.shanpin.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shanpin.Adapter.MsgAdapter;
-import com.example.shanpin.Adapter.PinListAdapter;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MsgContentBean;
 import com.example.shanpin.bean.PinBean;
+import com.example.shanpin.bean.UserBean;
 import com.example.shanpin.util.AccountUtil;
 import com.example.shanpin.util.Okhttp;
 import com.example.shanpin.util.PictureUtil;
@@ -70,6 +68,9 @@ public class PostActivity extends AppCompatActivity {
 
     private MsgAdapter adapter;
     private List<MsgContentBean> mMsgList=new ArrayList<>();
+
+    private List<UserBean> userBeanList;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,18 +145,29 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE,  Menu.FIRST+1 , 0, "加入").setShowAsAction(1);
+        return true;
+    }
+
+
     //Toolbar item 按键响应
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
+            case Menu.FIRST+1:
+                JoinPIn(pinID,AccountUtil.getAccount(getApplicationContext()));
+                break;
             default:
                 break;
         }
         return true;
     }
-
     //将pinBean的东西设置到相应的控件上
     private void showDetail(PinBean pinBean){
         P_name.setText(pinBean.getUserName());
@@ -181,14 +193,55 @@ public class PostActivity extends AppCompatActivity {
             PictureUtil.loadImageFromUrl(PostActivity.this,imageView,pictureUrl);
         }
 
-        /*
-        if ((!PictureUtil.readIconFromFile(getApplicationContext(), icon)) && getIcon() != null && (!getIcon().isEmpty())) {
-            PictureUtil.downloadImage(getIcon(), PictureUtil.getIconPath(getApplicationContext()), this, icon);
+        String iconUrl=pinBean.getIcon();
+        if(!PictureUtil.readIconFromFile(PostActivity.this,icon,pinBean.getUserID())
+                && iconUrl!=null &&!iconUrl.isEmpty()){
+            String filename=PictureUtil.getIconPath(PostActivity.this,pinBean.getUserID());
+            PictureUtil.downloadImage(iconUrl,filename,PostActivity.this,icon);
         }
-        */
-
-
     }
+    private void JoinPIn(String pinID,String UserID){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("userID",UserID)
+                .add("pinID",pinID)
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+//                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
+                Log.d("PostActivity", "onResponse: "+responseText);
+                if (!(responseText.equals("fail")||responseText.equals(""))){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"加入成功",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"加入失败",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/JoinPin";
+        Okhttp.sentPost(url,requestBody,callback);
+    }
+
 
     private void getPin(String pinID){
         final RequestBody requestBody=new FormBody.Builder()
@@ -273,6 +326,55 @@ public class PostActivity extends AppCompatActivity {
             }
         };
         String url="http://119.29.136.236:8080/ShanPin/GetTalk";
+        Okhttp.sentPost(url,requestBody,callback);
+    }
+
+    private void getUserList(String pinID){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("pinID",pinID)
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+//                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
+                Log.d("PostActivity", "onResponse: "+responseText);
+                if (!(responseText.equals("fail")||responseText.equals(""))){
+                    userBeanList =new Gson().fromJson(responseText,new TypeToken<ArrayList<UserBean>>(){}.getType());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String userID = AccountUtil.getAccount(getApplicationContext());
+
+                            for(int i=0;i<userBeanList.size();i++){
+                                if(userID.equals(userBeanList.get(i).getId()+"")){
+
+                                }
+                            }
+
+                        }
+                    });
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showShort(PostActivity.this,responseText);
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/GetUserList";
         Okhttp.sentPost(url,requestBody,callback);
     }
 

@@ -72,7 +72,7 @@ public class PinListAdapter extends RecyclerView.Adapter<PinListAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, final int position){
         PinBean item = pinList.get(position);
         holder.itemName.setText(item.getTitle());
-        holder.itemMaster.setText(item.getUserID());
+        holder.itemMaster.setText(item.getUserName());
         holder.itemTime.setText(item.getTime_start());
     }
 

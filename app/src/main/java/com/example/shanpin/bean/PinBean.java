@@ -6,6 +6,7 @@ public class PinBean {
     private String pinID;
     private String userID;
     private String userName;
+    private String icon;
     private String tagID;
     private String title;
     private String content;
@@ -24,6 +25,14 @@ public class PinBean {
     }
 
     public PinBean() {
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getPinID() {

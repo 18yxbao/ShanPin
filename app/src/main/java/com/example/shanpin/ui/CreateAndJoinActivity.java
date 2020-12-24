@@ -8,18 +8,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.shanpin.Adapter.CreateAndJoinAdapter;
-import com.example.shanpin.Adapter.MessageListAdapter;
-import com.example.shanpin.Adapter.MsgAdapter;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.MessageBean;
-import com.example.shanpin.bean.MsgContentBean;
 import com.example.shanpin.util.AccountUtil;
 import com.example.shanpin.util.Okhttp;
-import com.google.android.material.textfield.TextInputEditText;
+import com.example.shanpin.util.ToastUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -44,27 +42,30 @@ public class CreateAndJoinActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
     private List<MessageBean> messageBeanList= new ArrayList<MessageBean>();
+
     private RecyclerView recyclerView;
-    private CreateAndJoinAdapter createAndJoinAdapter;
+    private CreateAndJoinAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private String mode;    //"0"是创建的拼，"1"是加入的拼
     private String suffix;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_and_join);
-
         mode=getIntent().getStringExtra("mode");
-
         toolbar = findViewById(R.id.activity_createandjion_toolbar);
+
         if(mode.equals("0")){
             toolbar.setTitle("我创建的拼");
             suffix="GetCreatePinList";
+
         }else {
             toolbar.setTitle("我加入的拼");
             suffix="GetJoinPinList";
+
         }
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -73,8 +74,8 @@ public class CreateAndJoinActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.activity_createandjion__recycler_view);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(CreateAndJoinActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        createAndJoinAdapter=new CreateAndJoinAdapter(messageBeanList);
-        recyclerView.setAdapter(createAndJoinAdapter);
+        adapter =new CreateAndJoinAdapter(messageBeanList);
+        recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout=findViewById(R.id.activity_createandjion_swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -84,6 +85,56 @@ public class CreateAndJoinActivity extends AppCompatActivity {
             }
         });
         getList(suffix);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu=menu;
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE,  Menu.FIRST+1 , 0, "管理").setShowAsAction(1);
+        menu.add(Menu.NONE,  Menu.FIRST+2 , 0, "删除").setVisible(false).setShowAsAction(1);
+        menu.add(Menu.NONE,  Menu.FIRST+3 , 0, "完成").setVisible(false).setShowAsAction(1);
+        return true;
+    }
+
+    //Toolbar item 按键响应
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case Menu.FIRST+1 :
+                adapter.setManage(1);
+                menu.getItem(0).setVisible(false);
+                menu.getItem(1).setVisible(true);
+                menu.getItem(2).setVisible(true);
+                break;
+            case Menu.FIRST+2 :
+                String userID=AccountUtil.getAccount(getApplicationContext());
+                List<MessageBean> manageList=adapter.getManageList();
+                for(int i=0;i<manageList.size();i++) {
+                    if (mode.equals("0"))
+                        deletePin(manageList.get(i).getPinID());
+                    else
+                        quitPin(userID, manageList.get(i).getPinID());
+
+                    messageBeanList.remove(manageList.get(i));
+                }
+                manageList.clear();
+                adapter.notifyDataSetChanged();
+                break;
+
+            case Menu.FIRST+3 :
+                adapter.setManage(0);
+                menu.getItem(0).setVisible(true);
+                menu.getItem(1).setVisible(false);
+                menu.getItem(2).setVisible(false);
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private void getList(String suffix){
@@ -102,7 +153,6 @@ public class CreateAndJoinActivity extends AppCompatActivity {
                 });
                 Log.d("getTalkList", "onResponse: "+"请检查你的网络");
             }
-
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseText = response.body().string();
@@ -119,7 +169,7 @@ public class CreateAndJoinActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 //                            messageListAdapter.notifyDataSetChanged();
-                            createAndJoinAdapter.setMessageList(messageBeanList);
+                            adapter.setMessageList(messageBeanList);
                         }
                     });
 
@@ -127,6 +177,86 @@ public class CreateAndJoinActivity extends AppCompatActivity {
             }
         };
         String url="http://119.29.136.236:8080/ShanPin/"+suffix;
+        Okhttp.sentPost(url,requestBody,callback);
+    }
+
+    private void quitPin(String userID, String pinID){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("pinID",pinID)
+                .add("userID",userID)
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+                if (!(responseText.equals("fail")||responseText.equals(""))){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"退出成功",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showShort(getApplicationContext(),responseText);
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/QuitPin";
+        Okhttp.sentPost(url,requestBody,callback);
+    }
+
+
+    private void deletePin(String pinID){
+        final RequestBody requestBody=new FormBody.Builder()
+                .add("pinID",pinID)
+                .build();
+        Callback callback=new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"请检查你的网络",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final String responseText = response.body().string();
+                if (!(responseText.equals("fail")||responseText.equals(""))){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"删除成功",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showShort(getApplicationContext(),responseText);
+                        }
+                    });
+                }
+            }
+        };
+        String url="http://119.29.136.236:8080/ShanPin/DeletePin";
         Okhttp.sentPost(url,requestBody,callback);
     }
 }
