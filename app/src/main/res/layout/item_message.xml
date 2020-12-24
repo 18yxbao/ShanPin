@@ -8,17 +8,27 @@
     app:cardBackgroundColor="@color/color_white"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
-    app:cardCornerRadius="5dp"
-    android:layout_margin="10dp"
+    app:cardCornerRadius="1dp"
+    android:layout_margin="5dp"
     >
 
+    <ImageView
+        android:id="@+id/item_message_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="start|center_vertical"
+        android:background="@drawable/msg" />
 
     <TextView
         android:id="@+id/item_message_Name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:text="群聊名"
-        android:textSize="24sp" />
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/item_message_is_choose"

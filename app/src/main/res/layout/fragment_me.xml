@@ -58,6 +58,11 @@
         android:layout_width="match_parent"
         android:layout_height="5dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background_grey" />
+
     <LinearLayout
         android:id="@+id/fragment_me_createPin"
         android:layout_width="match_parent"
@@ -77,6 +82,11 @@
             android:layout_height="wrap_content"
             android:text="我创建的拼" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background_grey" />
 
     <LinearLayout
         android:id="@+id/fragment_me_joinPin"
@@ -98,6 +108,36 @@
             android:text="我加入的拼" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background_grey" />
+
+    <LinearLayout
+        android:id="@+id/fragment_me_history"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/long_button_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft='15dp'
+            android:layout_marginRight='20dp'
+            app:srcCompat="@android:drawable/arrow_up_float" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已结束的拼" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background_grey" />
+
     <LinearLayout
         android:id="@+id/fragment_me_setting"
         android:layout_width="match_parent"
@@ -117,6 +157,11 @@
             android:layout_height="wrap_content"
             android:text="设置" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background_grey" />
 
     <LinearLayout
         android:id="@+id/fragment_me_outload"

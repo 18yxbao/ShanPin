@@ -42,7 +42,7 @@ public class Fragment_message extends Fragment {
 
 
     //定义一个帖子列表作为数据源
-    private List<MessageBean> messageBeanList= new ArrayList<MessageBean>();
+    private List<MessageBean> messageBeanList = new ArrayList<MessageBean>();
     private RecyclerView recyclerView;
     private MessageListAdapter messageListAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -50,54 +50,60 @@ public class Fragment_message extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view =inflater.inflate(R.layout.fragment_message,container,false);
-        recyclerView=view.findViewById(R.id.fragment_message__recycler_view);
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(view.getContext());
+        final View view = inflater.inflate(R.layout.fragment_message, container, false);
+        recyclerView = view.findViewById(R.id.fragment_message__recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        messageListAdapter=new MessageListAdapter(messageBeanList);
+        messageListAdapter = new MessageListAdapter(messageBeanList);
         recyclerView.setAdapter(messageListAdapter);
-
-        swipeRefreshLayout=view.findViewById(R.id.fragment_message_swipeRefreshLayout);
+        swipeRefreshLayout = view.findViewById(R.id.fragment_message_swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                messageBeanList.clear();
                 getTalkList();
+                getWaitScoreList();
             }
         });
         getTalkList();
+        getWaitScoreList();
         return view;
     }
 
 
-    private void getTalkList(){
-        RequestBody requestBody=new FormBody.Builder()
-                .add("userID",AccountUtil.getAccount(getActivity()))
+    private void getTalkList() {
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", AccountUtil.getAccount(getActivity()))
                 .build();
-        Callback callback=new Callback() {
+        Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 //                                Toast.makeText(LoginActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(),"请检查你的网络",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "请检查你的网络", Toast.LENGTH_SHORT).show();
                     }
                 });
-                Log.d("getTalkList", "onResponse: "+"请检查你的网络");
+                Log.d("getTalkList", "onResponse: " + "请检查你的网络");
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseText = response.body().string();
 //                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
-                Log.d("Fragment_message", "getTalkList:onResponse: "+responseText);
+                Log.d("Fragment_message", "getTalkList:onResponse: " + responseText);
                 swipeRefreshLayout.setRefreshing(false);
-                if (!(responseText.equals("fail")||responseText.equals(""))){
-                    messageBeanList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MessageBean>>(){}.getType());
-
+                if (!(responseText.equals("fail") || responseText.equals(""))) {
+                    List<MessageBean> list = new Gson().fromJson(responseText, new TypeToken<ArrayList<MessageBean>>() {
+                    }.getType());
+                    for(int i=0;i<list.size();i++){
+                        list.get(i).setStatus("1");
+                    }
+                    messageBeanList.addAll(list);
 //                    List<MessageBean> tempList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MessageBean>>(){}.getType());
 //                    messageBeanList.addAll(tempList);
-                    Log.d("Fragment_message", "getTalkList:messageBeanList: "+messageBeanList.toString());
+                    Log.d("Fragment_message", "getTalkList:messageBeanList: " + messageBeanList.toString());
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -109,8 +115,53 @@ public class Fragment_message extends Fragment {
                 }
             }
         };
-        String url="http://119.29.136.236:8080/ShanPin/GetTalkList";
-        Okhttp.sentPost(url,requestBody,callback);
+        String url = "http://119.29.136.236:8080/ShanPin/GetTalkList";
+        Okhttp.sentPost(url, requestBody, callback);
+    }
+
+    private void getWaitScoreList() {
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", AccountUtil.getAccount(getActivity()))
+                .build();
+        Callback callback = new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                                Toast.makeText(LoginActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "请检查你的网络", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.d("getTalkList", "onResponse: " + "请检查你的网络");
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseText = response.body().string();
+//                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
+                Log.d("Fragment_message", "getTalkList:onResponse: " + responseText);
+                swipeRefreshLayout.setRefreshing(false);
+                if (!(responseText.equals("fail") || responseText.equals(""))) {
+                    List<MessageBean> list = new Gson().fromJson(responseText, new TypeToken<ArrayList<MessageBean>>() {
+                    }.getType());
+                    messageBeanList.addAll(list);
+//                    List<MessageBean> tempList=new Gson().fromJson(responseText,new TypeToken<ArrayList<MessageBean>>(){}.getType());
+//                    messageBeanList.addAll(tempList);
+                    Log.d("Fragment_message", "getTalkList:messageBeanList: " + messageBeanList.toString());
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            messageListAdapter.notifyDataSetChanged();
+                            messageListAdapter.setMessageList(messageBeanList);
+                        }
+                    });
+
+                }
+            }
+        };
+        String url = "http://119.29.136.236:8080/ShanPin/GetWaitScoreList";
+        Okhttp.sentPost(url, requestBody, callback);
     }
 
 }

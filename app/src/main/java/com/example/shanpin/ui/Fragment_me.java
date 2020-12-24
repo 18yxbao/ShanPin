@@ -23,7 +23,7 @@ public class Fragment_me extends Fragment {
     private LinearLayout setting;
     private LinearLayout createPin;
     private LinearLayout joinPin;
-
+    private LinearLayout history;
 
     private TextView account_text;
     private TextView name_text;
@@ -37,7 +37,7 @@ public class Fragment_me extends Fragment {
         setting =(LinearLayout) view.findViewById(R.id.fragment_me_setting);
         createPin=(LinearLayout) view.findViewById(R.id.fragment_me_createPin);
         joinPin =(LinearLayout) view.findViewById(R.id.fragment_me_joinPin);
-
+        history=(LinearLayout) view.findViewById(R.id.fragment_me_history);
         account_text=(TextView) view.findViewById(R.id.fragment_me_account);
         name_text=(TextView) view.findViewById(R.id.fragment_me_name);
         imageView=(ImageView) view.findViewById(R.id.fragment_me_icon);
@@ -55,6 +55,7 @@ public class Fragment_me extends Fragment {
         setting.setOnClickListener(click);
         createPin.setOnClickListener(click);
         joinPin.setOnClickListener(click);
+        history.setOnClickListener(click);
         return view;
     }
 
@@ -81,6 +82,8 @@ public class Fragment_me extends Fragment {
                     break;
                 case R.id.fragment_me_setting:
                     intent=new Intent(view.getContext(),ScoreActivity.class);
+                    intent.putExtra("mode","1");
+                    intent.putExtra("pinID","7");
                     view.getContext().startActivity(intent);
                     break;
                 case R.id.fragment_me_createPin:
@@ -92,6 +95,11 @@ public class Fragment_me extends Fragment {
                 case R.id.fragment_me_joinPin:
                     intent=new Intent(view.getContext(),CreateAndJoinActivity.class);
                     intent.putExtra("mode","1");
+                    view.getContext().startActivity(intent);
+                    break;
+                case R.id.fragment_me_history:
+                    intent=new Intent(view.getContext(),CreateAndJoinActivity.class);
+                    intent.putExtra("mode","2");
                     view.getContext().startActivity(intent);
                     break;
             }

@@ -13,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.shanpin.R;
 import com.example.shanpin.bean.UserBean;
 import com.example.shanpin.util.AccountUtil;
+import com.example.shanpin.util.ActionTrigger;
 import com.example.shanpin.util.Okhttp;
+import com.example.shanpin.util.ToastUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
     private String verifiCode;
     private String password1;
     private String password2;
+    private ActionTrigger actionTrigger=new ActionTrigger(3000);
+    private ActionTrigger actionTrigger2=new ActionTrigger(5000);
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +68,15 @@ public class RegisterActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.activity_register_sendVeriCode:
+                    if (!actionTrigger2.canTrigger()){
+                        ToastUtil.showShort(RegisterActivity.this,"点击太频繁！");
+                        break;
+                    }
                     email = userEmail.getText().toString().trim();
                     String[] splitString =email.split("@");
                     if(email.equals("")){
                         Toast.makeText(getApplicationContext(),"邮箱不能为空",Toast.LENGTH_SHORT).show();
-                    }else if(splitString.length<2 && !splitString[1].equals("stu.edu.cn")){
+                    }else if(splitString.length<2 || !splitString[1].equals("stu.edu.cn")){
                         Toast.makeText(getApplicationContext(),"请输入汕大邮箱",Toast.LENGTH_SHORT).show();
                     }else{
                         PublishCode(email);
@@ -76,6 +84,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                     break;
                 case R.id.activity_register_register_btn:
+                    if (!actionTrigger.canTrigger()){
+                        ToastUtil.showShort(RegisterActivity.this,"点击太频繁！");
+                        break;
+                    }
                     email = userEmail.getText().toString().trim();
                     verifiCode = verificationCode.getText().toString().trim();
                     password1 = register_pwd.getText().toString().trim();
@@ -162,18 +174,20 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "验证码输入错误", Toast.LENGTH_SHORT).show();
                         }else if(responseText.equals("")){
                             Toast.makeText(RegisterActivity.this, "啥玩意出错了", Toast.LENGTH_SHORT).show();
+                        }else if(responseText.equals("exist")) {
+                            Toast.makeText(RegisterActivity.this, "用户已存在，请直接登录", Toast.LENGTH_SHORT).show();
                         }else{ //注册成功会返回用户ID
-                            AccountUtil.setAccount(getApplicationContext(),responseText);
-                            Toast.makeText(RegisterActivity.this, "注册成功，你的用户ID是："+responseText, Toast.LENGTH_SHORT).show();
-                            UserBean userBean=new UserBean();
-                            userBean.setEmail(email);
-                            userBean.setPassword(password1);
+                                AccountUtil.setAccount(getApplicationContext(),responseText);
+                                Toast.makeText(RegisterActivity.this, "注册成功，你的用户ID是："+responseText, Toast.LENGTH_SHORT).show();
+                                UserBean userBean=new UserBean();
+                                userBean.setEmail(email);
+                                userBean.setPassword(password1);
 //                            userBean.setId(responseText);
 
-                            AccountUtil.setUserInfo(getApplicationContext(),userBean);
-                            Intent intent = new Intent(getApplicationContext(),SetUserInfoActivity.class);
-                            startActivity(intent);
-                            finish();
+                                AccountUtil.setUserInfo(getApplicationContext(),userBean);
+                                Intent intent = new Intent(getApplicationContext(),SetUserInfoActivity.class);
+                                startActivity(intent);
+                                finish();
                         }
                     }
                 });

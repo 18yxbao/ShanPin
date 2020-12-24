@@ -17,6 +17,19 @@ public class PinBean {
     private String member_max;
     private String gender_limit;
     private String status;
+    private String member_num;
+
+
+
+    public String getMember_num() {
+        return member_num;
+    }
+
+    public void setMember_num(String member_num) {
+        this.member_num = member_num;
+    }
+
+
 
     public PinBean(String title, String userID,String Time){
         this.title=title;

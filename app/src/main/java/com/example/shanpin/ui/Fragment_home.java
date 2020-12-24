@@ -106,6 +106,7 @@ public class Fragment_home extends Fragment {
             tagButtonList.add(button);
             tag_layout.addView(button);
         }
+        tagButtonList.get(0).setBackgroundResource(R.color.colorPrimary);
     }
 
 

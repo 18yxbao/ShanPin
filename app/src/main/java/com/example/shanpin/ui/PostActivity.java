@@ -70,7 +70,7 @@ public class PostActivity extends AppCompatActivity {
     private List<MsgContentBean> mMsgList=new ArrayList<>();
 
     private List<UserBean> userBeanList;
-
+    private Menu menu;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,8 +147,10 @@ public class PostActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu=menu;
         super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE,  Menu.FIRST+1 , 0, "加入").setShowAsAction(1);
+        menu.add(Menu.NONE,  Menu.FIRST+1 , 0, "加入");
+        menu.add(Menu.NONE,  Menu.FIRST+2 , 0, "人员");
         return true;
     }
 
@@ -163,6 +165,12 @@ public class PostActivity extends AppCompatActivity {
             case Menu.FIRST+1:
                 JoinPIn(pinID,AccountUtil.getAccount(getApplicationContext()));
                 break;
+            case Menu.FIRST+2:
+                Intent intent = new Intent(getApplicationContext(),ScoreActivity.class);
+                intent.putExtra("mode","0");
+                intent.putExtra("pinID",pinID);
+                startActivity(intent);
+                break;
             default:
                 break;
         }
@@ -170,10 +178,13 @@ public class PostActivity extends AppCompatActivity {
     }
     //将pinBean的东西设置到相应的控件上
     private void showDetail(PinBean pinBean){
+        if(pinBean.getMember_num().equals(pinBean.getMember_max())||pinBean.getUserID().equals(AccountUtil.getAccount(getApplicationContext()))){
+            menu.getItem(0).setVisible(false);
+        }
         P_name.setText(pinBean.getUserName());
         P_title.setText(pinBean.getTitle());
         P_content.setText(pinBean.getContent());
-        String memberText =  pinBean.getMember_min() + "~" + pinBean.getMember_max() + "人";
+        String memberText =  "已加入 "+pinBean.getMember_num()+"人 ; 限制 "+pinBean.getMember_min() + "~" + pinBean.getMember_max() + "人";
         P_member.setText(memberText);
         String genderText = pinBean.getGender_limit();
         switch (genderText) {
@@ -200,46 +211,48 @@ public class PostActivity extends AppCompatActivity {
             PictureUtil.downloadImage(iconUrl,filename,PostActivity.this,icon);
         }
     }
-    private void JoinPIn(String pinID,String UserID){
-        final RequestBody requestBody=new FormBody.Builder()
-                .add("userID",UserID)
-                .add("pinID",pinID)
+
+
+
+    private void JoinPIn(String pinID,String UserID) {
+        final RequestBody requestBody = new FormBody.Builder()
+                .add("userID", UserID)
+                .add("pinID", pinID)
                 .build();
-        Callback callback=new Callback() {
+        Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PostActivity.this, "请检查你的网络", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
+
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 final String responseText = response.body().string();
 //                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
-                Log.d("PostActivity", "onResponse: "+responseText);
-                if (!(responseText.equals("fail")||responseText.equals(""))){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"加入成功",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                Log.d("PostActivity", "onResponse: " + responseText);
+                final String showtext;
+                if (!(responseText.equals("fail") || responseText.equals(""))) {
+                    if (responseText.equals("full")) showtext = "已满人, 不能加入";
+                    else showtext = "加入成功";
+
+                } else {
+                    showtext = "加入失败";
                 }
-                else{
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"加入失败",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PostActivity.this, showtext, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         };
-        String url="http://119.29.136.236:8080/ShanPin/JoinPin";
-        Okhttp.sentPost(url,requestBody,callback);
+        String url = "http://119.29.136.236:8080/ShanPin/JoinPin";
+        Okhttp.sentPost(url, requestBody, callback);
     }
 
 
@@ -329,54 +342,7 @@ public class PostActivity extends AppCompatActivity {
         Okhttp.sentPost(url,requestBody,callback);
     }
 
-    private void getUserList(String pinID){
-        final RequestBody requestBody=new FormBody.Builder()
-                .add("pinID",pinID)
-                .build();
-        Callback callback=new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(PostActivity.this,"请检查你的网络",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                final String responseText = response.body().string();
-//                                Toast.makeText(LoginActivity.this,responseText,Toast.LENGTH_SHORT).show();
-                Log.d("PostActivity", "onResponse: "+responseText);
-                if (!(responseText.equals("fail")||responseText.equals(""))){
-                    userBeanList =new Gson().fromJson(responseText,new TypeToken<ArrayList<UserBean>>(){}.getType());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String userID = AccountUtil.getAccount(getApplicationContext());
-
-                            for(int i=0;i<userBeanList.size();i++){
-                                if(userID.equals(userBeanList.get(i).getId()+"")){
-
-                                }
-                            }
-
-                        }
-                    });
-                }else{
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtil.showShort(PostActivity.this,responseText);
-                        }
-                    });
-                }
-            }
-        };
-        String url="http://119.29.136.236:8080/ShanPin/GetUserList";
-        Okhttp.sentPost(url,requestBody,callback);
-    }
 
     private void sendTalk(final MsgContentBean msgContentBean){
         final RequestBody requestBody=new FormBody.Builder()
