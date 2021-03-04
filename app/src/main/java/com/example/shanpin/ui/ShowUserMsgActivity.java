@@ -120,7 +120,8 @@ public class ShowUserMsgActivity extends AppCompatActivity {
                             T_email.setText(userBean.getEmail());
                             T_gender.setText(userBean.getGender());
                             T_grade.setText(userBean.getGrade());
-                            T_score.setText("" + userBean.getScore());
+                            int term=(int)(userBean.getScore()*100);
+                            T_score.setText("" + term/100.0);
                             PictureUtil.downloadImage(userBean.getIcon(), PictureUtil.getIconPath(getApplicationContext(),""+userBean.getId()), ShowUserMsgActivity.this, imageView);
                         }
                     });

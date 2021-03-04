@@ -117,7 +117,8 @@ public class SetUserInfoActivity extends AppCompatActivity{
         T_email.setText(userBean.getEmail());
         T_gender.setText(userBean.getGender());
         T_grade.setText(userBean.getGrade());
-        T_score.setText("" + userBean.getScore());
+        int term=(int)(userBean.getScore()*100);
+        T_score.setText("" + term/100.0);
 
         //设置点击事件
         set_icon.setOnClickListener(click);
